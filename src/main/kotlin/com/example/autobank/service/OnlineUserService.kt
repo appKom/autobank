@@ -27,11 +27,16 @@ class OnlineUserService(
     }
 
     fun checkUser(): AuthenticatedUserResponse {
-        var storedUser = onlineUserRepository.findByOnlineId(authenticationService.getUserSub())
+        val storedUser = onlineUserRepository.findByOnlineId(authenticationService.getUserSub())
         if (storedUser == null) {
-            storedUser = createOnlineUser()
+            try {
+                createOnlineUser()
+            } catch (e: Exception) {
+                return AuthenticatedUserResponse(success = false, false, false, null)
+            }
         }
-        return AuthenticatedUserResponse(success = true, authenticationService.checkBankomMembership(), authenticationService.checkSuperAdmin())
+
+        return AuthenticatedUserResponse(success = true, authenticationService.checkBankomMembership(), authenticationService.checkSuperAdmin(), expiresat = authenticationService.getExpiresAt())
     }
 
     fun createOnlineUser(): OnlineUser {

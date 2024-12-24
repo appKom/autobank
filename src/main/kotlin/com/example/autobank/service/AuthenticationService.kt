@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
+import java.time.Instant
 
 
 @Service
@@ -132,6 +133,16 @@ class AuthenticationService {
 
     fun checkSuperAdmin(): Boolean {
         return superadminEmails.split(",").contains(getUserDetails().email)
+    }
+
+    fun getExpiresAt(): Instant? {
+            val authentication = SecurityContextHolder.getContext().authentication
+            return if (authentication is JwtAuthenticationToken) {
+                val token = authentication.token
+                token.getClaim("exp")
+            } else {
+                null
+            }
     }
 
     data class Result(

@@ -26,6 +26,7 @@ class AuthenticationController {
         return try {
             ResponseEntity.ok(onlineUserService.checkUser())
         } catch (e: Exception) {
+            print(e)
             ResponseEntity.badRequest().build();
         }
     }
